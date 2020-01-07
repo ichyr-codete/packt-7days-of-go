@@ -13,7 +13,8 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Println(" ========= Command line output ========= ")
-	log.Println(out.String())
+	rawInput := out.String()
+	log.Println("\n", rawInput)
 }
 
 func executePS(args ...string) (*bytes.Buffer, error) {
