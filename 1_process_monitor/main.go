@@ -2,18 +2,18 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 	"os/exec"
 )
 
 func main() {
 	// query os
-	out, err := executePS("-p 61960")
+	out, err := executePS("-fr", "-o pcpu")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf(out.String())
+	log.Println(" ========= Command line output ========= ")
+	log.Println(out.String())
 }
 
 func executePS(args ...string) (*bytes.Buffer, error) {
@@ -21,7 +21,6 @@ func executePS(args ...string) (*bytes.Buffer, error) {
 	if len(args) > 0 {
 		cmd = exec.Command("ps", args...)
 	}
-	log.Printf("%#v\n", cmd.Args)
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
