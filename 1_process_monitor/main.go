@@ -23,6 +23,9 @@ func main() {
 	data := parseRawInput(rawInput)
 	log.Println(" ========= Parsed data table ========= ")
 	log.Printf("%#v", data)
+
+	// present cpu intensive process
+
 }
 
 func executePS(args ...string) (*bytes.Buffer, error) {
@@ -42,23 +45,26 @@ func parseRawInput(input string) []map[string]string {
 	rows := strings.Split(input, "\n")
 	rawHeaders := strings.Split(rows[0], " ")
 	headers := filterEmptyStrings(rawHeaders)
+	dataLength := len(headers)
 	dataRows := rows[1:]
 	result := make([]map[string]string, len(dataRows))
 	for _, value := range dataRows {
+		if value == "" {
+			continue
+		}
+
 		// These routines take an extra integer argument, n.
 		// If n >= 0, the function returns at most n matches/submatches;
 		// otherwise, it returns all of them.
 		data := reg.FindAllStringSubmatch(value, -1)
-		row := make(map[string]string, len(headers))
-		count := 1
-		for _, val := range data {
-			// if val == []string{""} {
-			// 	continue
-			// }
-			row[headers[count]] = val[count]
-			count++
+
+		row := make(map[string]string, dataLength)
+		for index, val := range data[0] {
+			if index == 0 {
+				continue
+			}
+			row[headers[index-1]] = strings.TrimSpace(val)
 		}
-		log.Printf("ITEM PARSED\n%#v\n", row)
 		result = append(result, row)
 	}
 	return result
