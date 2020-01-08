@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// query os
-	out, err := executePS("-fr", "-o pcpu")
+	out, err := ExecutePS("-fr", "-o pcpu")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -20,7 +20,7 @@ func main() {
 
 	// strip first line
 	// parse all data as map
-	data := parseRawInput(rawInput)
+	data := ParseRawInput(rawInput)
 	log.Println(" ========= Parsed data table ========= ")
 	log.Printf("%#v", data)
 
@@ -28,7 +28,8 @@ func main() {
 
 }
 
-func executePS(args ...string) (*bytes.Buffer, error) {
+// ExecutePS ...
+func ExecutePS(args ...string) (*bytes.Buffer, error) {
 	var cmd *exec.Cmd
 	if len(args) > 0 {
 		cmd = exec.Command("ps", args...)
@@ -39,12 +40,13 @@ func executePS(args ...string) (*bytes.Buffer, error) {
 	return &out, err
 }
 
-func parseRawInput(input string) []map[string]string {
+// ParseRawInput ...
+func ParseRawInput(input string) []map[string]string {
 	reg := regexp.MustCompile(`(?P<uid>\d+)\s+(?P<pid>\d+)\s+(?P<ppid>\d+)\s+(?P<c>\d+)\s+(?P<stime>\d?\d:\d{2}\w{2})\s+(?P<tty>\w+)\s+(?P<time>\d+:\d+.\d+)\s+(?P<cmd>.+)\s+(?P<percent_cpu>\d+.\d+)`)
 
 	rows := strings.Split(input, "\n")
 	rawHeaders := strings.Split(rows[0], " ")
-	headers := filterEmptyStrings(rawHeaders)
+	headers := FilterEmptyStrings(rawHeaders)
 	dataLength := len(headers)
 	dataRows := rows[1:]
 	result := make([]map[string]string, len(dataRows))
@@ -70,7 +72,8 @@ func parseRawInput(input string) []map[string]string {
 	return result
 }
 
-func filterEmptyStrings(arr []string) []string {
+// FilterEmptyStrings ...
+func FilterEmptyStrings(arr []string) []string {
 	var res = []string{}
 	for _, val := range arr {
 		if val == "" {
