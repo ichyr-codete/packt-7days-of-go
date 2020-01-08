@@ -37,28 +37,29 @@ func executePS(args ...string) (*bytes.Buffer, error) {
 }
 
 func parseRawInput(input string) []map[string]string {
-	reg := regexp.MustCompile(`(?P<uid>\d+)\s+(?P<pid>\d+)\s+(?P<ppid>\d+)\s+(?P<c>\d+)\s+(?P<stime>\d?\d:\d\dpm)\s+(?P<tty>\w+)\s+(?P<time>\d+:\d+.\d+)\s+(?P<cmd>.+)(?P<percent_cpu>\d+.\d+)`)
+	reg := regexp.MustCompile(`(?P<uid>\d+)\s+(?P<pid>\d+)\s+(?P<ppid>\d+)\s+(?P<c>\d+)\s+(?P<stime>\d?\d:\d{2}\w{2})\s+(?P<tty>\w+)\s+(?P<time>\d+:\d+.\d+)\s+(?P<cmd>.+)\s+(?P<percent_cpu>\d+.\d+)`)
 
 	rows := strings.Split(input, "\n")
 	rawHeaders := strings.Split(rows[0], " ")
 	headers := filterEmptyStrings(rawHeaders)
-	var result []map[string]string
 	dataRows := rows[1:]
-	for index, value := range dataRows {
+	result := make([]map[string]string, len(dataRows))
+	for _, value := range dataRows {
 		// These routines take an extra integer argument, n.
 		// If n >= 0, the function returns at most n matches/submatches;
 		// otherwise, it returns all of them.
 		data := reg.FindAllStringSubmatch(value, -1)
 		row := make(map[string]string, len(headers))
-		count := 0
+		count := 1
 		for _, val := range data {
 			// if val == []string{""} {
 			// 	continue
 			// }
-			row[headers[count]] = val[0]
+			row[headers[count]] = val[count]
 			count++
 		}
-		result[index] = row
+		log.Printf("ITEM PARSED\n%#v\n", row)
+		result = append(result, row)
 	}
 	return result
 }
