@@ -45,6 +45,11 @@ func ParseRawInput(input string) []map[string]string {
 	reg := regexp.MustCompile(`(?P<uid>\d+)\s+(?P<pid>\d+)\s+(?P<ppid>\d+)\s+(?P<c>\d+)\s+(?P<stime>\d?\d:\d{2}\w{2})\s+(?P<tty>\w+)\s+(?P<time>\d+:\d+.\d+)\s+(?P<cmd>.+)\s+(?P<percent_cpu>\d+.\d+)`)
 
 	rows := strings.Split(input, "\n")
+
+	if len(rows) == 1 {
+		return make([]map[string]string, 0)
+	}
+
 	rawHeaders := strings.Split(rows[0], " ")
 	headers := FilterEmptyStrings(rawHeaders)
 	dataLength := len(headers)

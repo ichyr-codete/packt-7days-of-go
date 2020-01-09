@@ -5,6 +5,16 @@ import (
 	"testing"
 )
 
+func TestParseRawInputZeroInputResult(t *testing.T) {
+	a := ParseRawInput("")
+	e := make([]map[string]string, 0)
+	if !reflect.DeepEqual(a, e) {
+		t.Error("empty string doe not result in empty map")
+	}
+}
+func TestParseRawInputRegularSizeInput(t *testing.T) {}
+func TestParseRawWrongInput(t *testing.T)            {}
+
 func TestFilterEmptyStringsResultingInEmptyArray(t *testing.T) {
 	result := FilterEmptyStrings([]string{"", "", ""})
 	if len(result) > 0 {
