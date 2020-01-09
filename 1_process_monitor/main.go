@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"os/exec"
 	"regexp"
@@ -20,7 +21,11 @@ func main() {
 
 	// strip first line
 	// parse all data as map
-	data := ParseRawInput(rawInput)
+	data, err := ParseRawInput(rawInput)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	log.Println(" ========= Parsed data table ========= ")
 	log.Printf("%#v", data)
 
@@ -41,13 +46,19 @@ func ExecutePS(args ...string) (*bytes.Buffer, error) {
 }
 
 // ParseRawInput ...
-func ParseRawInput(input string) []map[string]string {
+func ParseRawInput(input string) ([]map[string]string, error) {
+	headerReg := regexp.MustCompile(`UID\s+PID\s+PPID\s+C\s+STIME\s+TTY\s+TIME\s+CMD\s+%CPU`)
+
 	reg := regexp.MustCompile(`(?P<uid>\d+)\s+(?P<pid>\d+)\s+(?P<ppid>\d+)\s+(?P<c>\d+)\s+(?P<stime>\d?\d:\d{2}\w{2})\s+(?P<tty>\w+)\s+(?P<time>\d+:\d+.\d+)\s+(?P<cmd>.+)\s+(?P<percent_cpu>\d+.\d+)`)
 
 	rows := strings.Split(input, "\n")
 
 	if len(rows) == 1 {
-		return make([]map[string]string, 0)
+		return make([]map[string]string, 0), nil
+	}
+
+	if headerReg.FindString(rows[0]) == "" {
+		return make([]map[string]string, 0), fmt.Errorf("ps command resulted in different data")
 	}
 
 	rawHeaders := strings.Split(rows[0], " ")
@@ -74,7 +85,7 @@ func ParseRawInput(input string) []map[string]string {
 		}
 		result = append(result, row)
 	}
-	return result
+	return result, nil
 }
 
 // FilterEmptyStrings ...
