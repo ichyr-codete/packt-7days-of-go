@@ -30,7 +30,7 @@ func TestParseRawInputRegularSizeInput(t *testing.T) {
 	a, _ := ParseRawInput(`
 	
 	UID   PID  PPID   C STIME   TTY           TIME CMD               %CPU
-	501  4248  3893   0  1:11pm ttys002    0:00.25 go run main.go    14.2  501  4263  4248   0  1:11pm ttys002    0:00.00 /var/folders/5c/   0.0
+	501  4248  3893   0  1:11pm ttys002    0:00.25 go run main.go    14.2
 	501  3893  2946   0  1:11pm ttys002    0:00.05 /bin/bash -l       0.0
 	501   505   480   0 10:51am ttys000    0:00.06 -bash              0.0
 	501   485   483   0 10:51am ttys001    0:00.06 -bash              0.0
