@@ -52,6 +52,8 @@ func ParseRawInput(input string) ([]map[string]string, error) {
 	reg := regexp.MustCompile(`(?P<uid>\d+)\s+(?P<pid>\d+)\s+(?P<ppid>\d+)\s+(?P<c>\d+)\s+(?P<stime>\d?\d:\d{2}\w{2})\s+(?P<tty>\w+)\s+(?P<time>\d+:\d+.\d+)\s+(?P<cmd>.+)\s+(?P<percent_cpu>\d+.\d+)`)
 
 	rows := strings.Split(input, "\n")
+	rows = FilterEmptyStrings(rows)
+	rows = RemoveWhitespaceCharactersFromString(rows)
 
 	if len(rows) == 1 {
 		return make([]map[string]string, 0), nil
@@ -66,7 +68,7 @@ func ParseRawInput(input string) ([]map[string]string, error) {
 	dataLength := len(headers)
 	dataRows := rows[1:]
 	result := make([]map[string]string, len(dataRows))
-	for _, value := range dataRows {
+	for index, value := range dataRows {
 		if value == "" {
 			continue
 		}
@@ -83,7 +85,7 @@ func ParseRawInput(input string) ([]map[string]string, error) {
 			}
 			row[headers[index-1]] = strings.TrimSpace(val)
 		}
-		result = append(result, row)
+		result[index] = row
 	}
 	return result, nil
 }
@@ -92,10 +94,18 @@ func ParseRawInput(input string) ([]map[string]string, error) {
 func FilterEmptyStrings(arr []string) []string {
 	var res = []string{}
 	for _, val := range arr {
-		if val == "" {
+		if val == "" || val == "\t" || val == "\n" {
 			continue
 		}
 		res = append(res, val)
 	}
 	return res
+}
+
+// RemoveWhitespaceCharactersFromString ...
+func RemoveWhitespaceCharactersFromString(str []string) []string {
+	for idx, val := range str {
+		str[idx] = strings.TrimSpace(val)
+	}
+	return str
 }

@@ -16,12 +16,12 @@ func TestParseRawInputZeroInputResult(t *testing.T) {
 func TestParseRawInputOneLineInput(t *testing.T) {
 	a, _ := ParseRawInput(`
 	UID   PID  PPID   C STIME   TTY           TIME CMD               %CPU
-	501  4248  3893   0  1:11pm ttys002    0:00.25 go run main.go    14.2  501  4263  4248   0  1:11pm ttys002    0:00.00 /var/folders/5c/   0.0
+	501  4248  3893   0  1:11pm ttys002    0:00.25 go run main.go    14.2
 	`)
 	e := []map[string]string{
-		map[string]string{"%CPU": "26.6", "C": "0", "CMD": "go run main.go", "PID": "5351", "PPID": "3893", "STIME": "1:29pm", "TIME": "0:00.27", "TTY": "ttys002", "UID": "501"},
+		map[string]string{"%CPU": "14.2", "C": "0", "CMD": "go run main.go", "PID": "4248", "PPID": "3893", "STIME": "1:11pm", "TIME": "0:00.25", "TTY": "ttys002", "UID": "501"},
 	}
-	if reflect.DeepEqual(a, e) {
+	if !reflect.DeepEqual(a, e) {
 		t.Error("failed to parse one line")
 	}
 }
@@ -53,7 +53,7 @@ func TestParseRawWrongInput(t *testing.T) {
 }
 
 func TestFilterEmptyStringsResultingInEmptyArray(t *testing.T) {
-	result := FilterEmptyStrings([]string{"", "", ""})
+	result := FilterEmptyStrings([]string{"", "\t", "\n"})
 	if len(result) > 0 {
 		t.Error("didn't receive empty array")
 	}
